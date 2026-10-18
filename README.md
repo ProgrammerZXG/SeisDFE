@@ -79,12 +79,18 @@ Shallow layers emphasize local amplitude variations, reflection textures, and st
 
 </div>
 
+<!-- Figure 2 temporarily hidden; remove this wrapper to restore.
+
 <details>
 <summary><b>Figure 2 · Evolution and organization of dense seismic representations</b></summary>
 <br>
 <p align="center"><img src="assets/dense_features.jpg" width="100%" alt="Figure 2"></p>
 <p align="center"><sub>(a) Patch-feature similarity during Stage I at 50k, 80k, and 100k steps. (b) PCA of features after each stage. (c) Frozen linear probing on SEAM. (d) PCA of features from different encoder depths.</sub></p>
 </details>
+
+-->
+
+<!-- Results temporarily hidden; remove this wrapper to restore.
 
 ## :stars: Results
 
@@ -158,6 +164,8 @@ Features of neighboring sections from the frozen 2D encoder are fused and decode
 
 <p align="center"><img src="assets/sparse_3d.jpg" width="100%" alt="Sparse 3D geobody detection"></p>
 <p align="center"><sub><b>Figure 5.</b> (a) Pseudo-3D decoding framework, (b) sparse labels, (c) 2D PUP predictions, (d) 3D convolutional decoder predictions.</sub></p>
+
+-->
 
 ## 🧠 Models
 

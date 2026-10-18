@@ -79,12 +79,18 @@ Wei Liu<sup>1,2,3</sup>
 
 </div>
 
+<!-- Figure 2 temporarily hidden; remove this wrapper to restore.
+
 <details>
 <summary><b>图 2 · 密集地震表征的演化与组织</b></summary>
 <br>
 <p align="center"><img src="assets/dense_features.jpg" width="100%" alt="图 2"></p>
 <p align="center"><sub>(a) 第一阶段 50k、80k、100k 步时的 patch 特征相似性；(b) 各阶段特征的 PCA；(c) SEAM 冻结线性探测；(d) 不同编码器深度特征的 PCA。</sub></p>
 </details>
+
+-->
+
+<!-- Results temporarily hidden; remove this wrapper to restore.
 
 ## :stars: 实验结果
 
@@ -158,6 +164,8 @@ Wei Liu<sup>1,2,3</sup>
 
 <p align="center"><img src="assets/sparse_3d.jpg" width="100%" alt="稀疏三维地质体检测"></p>
 <p align="center"><sub><b>图 5.</b> (a) 伪三维解码框架；(b) 稀疏标注；(c) 二维 PUP 预测；(d) 三维卷积解码器预测。</sub></p>
+
+-->
 
 ## 🧠 模型
 
