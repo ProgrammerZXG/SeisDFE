@@ -1,153 +1,275 @@
-# SeisDFE
+<div align="center">
+
+# SeisDFE：面向密集特征提取的地震基础模型
+
+🏢 [计算解释组 (CIG)](https://cig.ustc.edu.cn/main.htm)
+
+[Zhixiang Guo](https://cig.ustc.edu.cn/guo/list.htm)<sup>1,2,3</sup>,
+[Xinming Wu](https://cig.ustc.edu.cn/xinming/list.htm)<sup>1,2,3,*</sup>,
+[Yimin Dou](https://cig.ustc.edu.cn/yimin/list.htm)<sup>1,2,3</sup>,
+[Hui Gao](https://cig.ustc.edu.cn/hui/list.htm)<sup>4</sup>,
+Siyao Zhao<sup>1,2,3</sup>,
+He Huang<sup>1,2,3</sup>,
+Wei Liu<sup>1,2,3</sup>
+
+[![Paper](https://img.shields.io/badge/%E8%AE%BA%E6%96%87-%E5%AE%A1%E7%A8%BF%E4%B8%AD-b31b1b?style=flat-square)](#seisdfe-citation)
+[![Code](https://img.shields.io/badge/%E4%BB%A3%E7%A0%81-%E5%B7%B2%E5%8F%91%E5%B8%83-2ea44f?style=flat-square)](#seisdfe-quick-start)
+[![Weights](https://img.shields.io/badge/%E6%9D%83%E9%87%8D-%E5%8D%B3%E5%B0%86%E5%8F%91%E5%B8%83-9e9e9e?style=flat-square)](docs/CHECKPOINTS.zh-CN.md)
+[![License](https://img.shields.io/badge/License-MIT-1f6feb?style=flat-square)](LICENSE)
+[![Tests](https://img.shields.io/github/actions/workflow/status/ProgrammerZXG/SeisDFE/tests.yml?branch=main&label=CPU%20tests&style=flat-square)](https://github.com/ProgrammerZXG/SeisDFE/actions/workflows/tests.yml)
 
 [English](README.md) | **简体中文**
 
-**用于密集特征提取的地震基础模型。**
-[数据格式](docs/DATA.zh-CN.md) · [模型权重](docs/CHECKPOINTS.zh-CN.md) · [复现说明](docs/REPRODUCIBILITY.zh-CN.md)
+</div>
 
-**Zhixiang Guo**<sup>1,2,3</sup> · **Xinming Wu**<sup>1,2,3,*</sup> · **Yimin Dou**<sup>1,2,3</sup> · **Hui Gao**<sup>4</sup><br>
-**Siyao Zhao**<sup>1,2,3</sup> · **He Huang**<sup>1,2,3</sup> · **Wei Liu**<sup>1,2,3</sup>
+<b>🏛 作者单位</b>
 
-包含三阶段预训练、特征 PCA 可视化、小样本训练，以及断层与 RGT 推理。
-应用层统一命名为 `seisdfe`，必要的 DINOv3 核心实现保留 `dinov3` 原名。
+<sup>1</sup> 中国科学技术大学 地球和空间科学学院 地震与地球内部物理实验室，合肥 230026
 
-- 预训练：DINO/iBOT/KoLeo → Gram 特征锚定 → 多分辨率适配。
-- 下游任务：地震相、盐体、断层、RGT；支持固定样本数量和明确的训练子集。
-- Decoder：Linear、3×3 Conv、PUP、MLA、DPT；编码器可冻结或启用 LoRA。
-- 现成推理头：断层 DPT；RGT DPT + 编码器后 30 层 LoRA。
+<sup>2</sup> 中国科学技术大学 精密测量国家重点实验室，合肥 230026
 
-**数据和编码器权重不随代码分发。** 断层/RGT 推理头已单独导出，适合作为
-GitHub Release 附件；公开下载链接尚未设置。文件名、校验值及状态见
-[模型权重说明](docs/CHECKPOINTS.zh-CN.md)。
+<sup>3</sup> 中国科学技术大学 蒙城地球物理国家野外科学观测研究站，合肥 230026
 
-## 安装
+<sup>4</sup> 安徽理工大学，安徽淮南 232001
+
+<sup>*</sup> 通讯作者：xinmwu@ustc.edu.cn
+
+## 📰 动态
+
+- **2026.10.18：** 发布三阶段预训练、小样本训练、实际资料推理与 PCA 特征可视化代码。
+- **2026.10：** 论文审稿中。
+- **即将发布：** SeisDFE 编码器权重，以及断层 / RGT 实际资料推理头（见[模型权重说明](docs/CHECKPOINTS.zh-CN.md)）。
+
+## ✨ 简介
+
+<p align="justify">
+地震解释中高质量标注稀缺，而多数深度学习流程仍需针对每个任务单独训练模型。<b>SeisDFE</b> 是一个面向<b>密集特征提取</b>的 70 亿参数地震基础模型：以 DINOv3 ViT-7B 为起点，在源自 <b>500 余个</b>公开三维地震数据体（覆盖面积超过 20 万平方公里）的 <b>534 万张</b>二维地震图像上预训练。判别式自监督学习、Gram 特征锚定与多分辨率适配三个阶段依次进行，使 patch 级特征兼具判别性与空间一致性。在<b>冻结编码器</b>的条件下，同一套特征即可支撑地震相分类、盐体检测、断层检测与相对地质时间（RGT）估计，并可扩展到合成数据到实际资料的迁移以及稀疏标注下的三维地质体检测。
+</p>
+
+<p align="center">
+  <img src="assets/workflow.jpg" width="100%" alt="SeisDFE 整体框架">
+</p>
+<p align="center"><sub><b>图 1.</b> 三阶段预训练（左）、冻结的 ViT-7B 编码器及其 patch 级密集特征（中）、面向下游解释任务的任务解码器（右）。</sub></p>
+
+**亮点**
+
+- 🧱 **规模：** 含 40 个 Transformer 块的 ViT-7B 编码器；单通道 patch embedding 以 RGB 权重的通道均值初始化。
+- 🔗 **空间一致的密集特征：** Gram 锚定恢复了长时间自监督训练中逐渐退化的空间一致性。
+- 🎯 **标注高效：** 在 F3 上仅用 **2 张标注剖面**，全体积 mIoU 比各基线高约 **12–19 个百分点**。
+- 🧊 **冻结即可复用：** 一个冻结编码器配合轻量预测头即可服务地震相、盐体、断层与 RGT，并可扩展到实际资料与稀疏三维解释。
+
+## 🔍 密集特征
+
+<p align="center">
+  <img src="assets/pca_layers.gif" width="460" alt="地震输入与 SeisDFE 第 10、20、30、40 层特征 PCA 的对比">
+</p>
+<p align="center"><sub>地震输入与 SeisDFE 第 10 → 20 → 30 → 40 层密集特征 PCA 的对比（取自图 2d）。PCA 颜色表示特征的组织方式，而非类别标签。</sub></p>
+
+<p align="justify">
+浅层特征突出局部振幅变化、反射纹理与构造边缘；中间层沿反射系统与地层变化组织特征；深层形成更大、更连续的区域，同时保留主要构造边界。在 SEAM 地震相分类上使用完全相同的冻结线性探测协议，每个阶段都提升了任务相关信息的可获取程度：
+</p>
+
+<div align="center">
+
+| 检查点 | mIoU | mPA |
+|:--|:--:|:--:|
+| 第一阶段 · 大规模自监督 | 0.6332 | 0.8143 |
+| 第二阶段 · Gram 锚定 | 0.6431 <sub>(+0.0099)</sub> | 0.8247 <sub>(+0.0104)</sub> |
+| 第三阶段 · 多分辨率适配 | **0.6530** <sub>(+0.0198)</sub> | **0.8297** <sub>(+0.0154)</sub> |
+
+</div>
+
+<details>
+<summary><b>图 2 · 密集地震表征的演化与组织</b></summary>
+<br>
+<p align="center"><img src="assets/dense_features.jpg" width="100%" alt="图 2"></p>
+<p align="center"><sub>(a) 第一阶段 50k、80k、100k 步时的 patch 特征相似性；(b) 各阶段特征的 PCA；(c) SEAM 冻结线性探测；(d) 不同编码器深度特征的 PCA。</sub></p>
+</details>
+
+## :stars: 实验结果
+
+### 极端小样本线性探测
+
+<p align="justify">
+所有编码器均冻结，仅训练线性预测头，使用相同的训练样本与数据划分；数值为最小标注量下四次随机抽样的均值。
+</p>
+
+<div align="center">
+
+| 任务（标注量） | 指标 | **SeisDFE** | DINOv3-7B | NCS-2D | SFM-Large |
+|:--|:--:|:--:|:--:|:--:|:--:|
+| TGS 盐体（5 张图像） | mIoU | **0.72** | 0.60 | 0.58 | 0.57 |
+| F3 地震相（2 张剖面） | 全体积 mIoU | **0.82** | 0.70 | 0.66 | 0.63 |
+
+</div>
+
+<p align="center">
+  <img src="assets/fewshot.png" width="90%" alt="极端小样本线性探测">
+</p>
+<p align="center"><sub><b>图 3.</b> (a) 盐体、(b) F3 地震相、(c) RGT（SSIM）与 (d) 断层的小样本线性探测结果，包含蒸馏得到的 SeisDFE-Large。</sub></p>
+
+### 任务解码器
+
+<p align="justify">
+在更大训练集上，SeisDFE、SeisDFE-Large 与 DINOv3-7B 保持冻结；SFM-Large 与 NCS-2D 报告冻结与 LoRA 适配中验证表现更好的配置。
+</p>
+
+<div align="center">
+
+<table>
+  <thead>
+    <tr><th align="left">编码器</th><th colspan="2">SEAM 地震相 · PUP</th><th colspan="2">TGS 盐体 · Linear</th><th colspan="2">断层 · MLA</th></tr>
+    <tr><th></th><th>mIoU</th><th>mPA</th><th>mIoU</th><th>mPA</th><th>mIoU</th><th>mPA</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>DINOv3-7B <sub>冻结</sub></td><td align="center">0.8374</td><td align="center">0.9221</td><td align="center">0.8116</td><td align="center">0.8815</td><td align="center"><b>0.7564</b></td><td align="center"><b>0.8023</b></td></tr>
+    <tr><td>SFM-Large <sub>LoRA</sub></td><td align="center">0.8243</td><td align="center">0.8994</td><td align="center">0.8044</td><td align="center">0.8773</td><td align="center">0.6361</td><td align="center">0.7062</td></tr>
+    <tr><td>NCS-2D <sub>冻结 / LoRA</sub></td><td align="center">0.8415</td><td align="center">0.9121</td><td align="center">0.8046</td><td align="center">0.8767</td><td align="center">0.6468</td><td align="center">0.7165</td></tr>
+    <tr><td>SeisDFE-Large <sub>冻结</sub></td><td align="center">0.8768</td><td align="center">0.9289</td><td align="center">0.8565</td><td align="center">0.9149</td><td align="center">0.7090</td><td align="center">0.7691</td></tr>
+    <tr><td><b>SeisDFE</b> <sub>冻结</sub></td><td align="center"><b>0.8845</b></td><td align="center"><b>0.9324</b></td><td align="center"><b>0.8819</b></td><td align="center"><b>0.9297</b></td><td align="center">0.7374</td><td align="center">0.7867</td></tr>
+  </tbody>
+</table>
+
+</div>
+
+<p align="justify"><sub>NCS-2D 在地震相任务中冻结，在盐体与断层任务中使用 LoRA。断层是窄小的不连续结构，更依赖多层特征融合与解码器能力，该任务上 DINOv3-7B 略高。</sub></p>
+
+<details>
+<summary><b>代表性预测结果</b></summary>
+<br>
+<p align="center"><img src="assets/downstream.jpg" width="100%" alt="下游预测结果"></p>
+<p align="center"><sub>行：SEAM 地震相、TGS 盐体、断层；列：地震数据、DINOv3-7B、SFM-Large、NCS-2D、SeisDFE、标签。</sub></p>
+</details>
+
+### 合成数据到实际资料的迁移
+
+<p align="justify">
+断层、溶洞与 RGT 模型仅用合成数据训练，并直接应用于未见过的实际工区，与在相同数据上训练的 U-Net 基线对比。断层与溶洞检测使用冻结编码器加 DPT 解码器；RGT 在编码器后 30 层加入 LoRA。由于缺少实际资料标签，该比较为定性结果。
+</p>
+
+<p align="center"><img src="assets/field_transfer.jpg" width="100%" alt="合成数据到实际资料的迁移"></p>
+<p align="center"><sub><b>图 4.</b> 实际资料上的断层检测（左上）、溶洞检测（右上）与 RGT 估计（下）：SeisDFE 与 U-Net 对比。</sub></p>
+
+### 稀疏标注下的三维地质体检测
+
+<p align="justify">
+冻结的二维编码器分别提取相邻剖面的特征，融合后由轻量三维卷积解码器解码，仅用稀疏标注切片训练。示例包括河道（Parihaka、Romney）、盐丘（F3）以及实际工区中的溶洞。
+</p>
+
+<p align="center"><img src="assets/sparse_3d.jpg" width="100%" alt="稀疏三维地质体检测"></p>
+<p align="center"><sub><b>图 5.</b> (a) 伪三维解码框架；(b) 稀疏标注；(c) 二维 PUP 预测；(d) 三维卷积解码器预测。</sub></p>
+
+## 🧠 模型
+
+| 模型 | 结构 | 训练数据 | 状态 |
+|:--|:--|:--|:--:|
+| SeisDFE 编码器（第三阶段） | ViT-7B/16，40 块，单通道 | 534 万 + 60 万张无标签地震图像 | 即将发布 |
+| 断层推理头 `fault_dpt.pth` | 冻结 SeisDFE + DPT | 合成断层数据 | 即将发布 |
+| RGT 推理头 `rgt_dpt_lora.pth` | SeisDFE + DPT + LoRA（后 30 块） | 合成 RGT 数据 | 即将发布 |
+
+权重不随代码分发，程序也不会自动下载。文件大小、SHA256 校验值与具体配置见 [docs/CHECKPOINTS.zh-CN.md](docs/CHECKPOINTS.zh-CN.md)。预训练需要原始 DINOv3-7B 权重，请按其条款从 [DINOv3 官方](https://github.com/facebookresearch/dinov3)获取。
+
+<a id="seisdfe-quick-start"></a>
+
+## :rocket: 快速开始
+
+### 1. 安装
 
 验证环境：Linux、Python 3.11、PyTorch 2.5.0、torchvision 0.20.0、CUDA 12.4。
-预训练需要 NVIDIA GPU；CPU 测试使用小型 DINOv3 模型。
 
 ```bash
 git clone https://github.com/ProgrammerZXG/SeisDFE.git
 cd SeisDFE
-python -m venv .venv
-source .venv/bin/activate
+python -m venv .venv && source .venv/bin/activate
 pip install torch==2.5.0 torchvision==0.20.0 --index-url https://download.pytorch.org/whl/cu124
 pip install -e .
 ```
 
-也可使用 [environment.yml](environment.yml)。以下命令均在仓库根目录执行；
-配置中的相对路径以当前工作目录为基准。程序不会自动下载权重。
+也可使用 [environment.yml](environment.yml)。以下命令均在仓库根目录执行。
 
-## 数据目录与格式
+### 2. 准备数据
 
-二维数组统一为 **[深度/时间, 道]**。地震数据使用有限值 `float32`；
-分割标签使用 `0..C-1` 的整数类别，255 表示忽略；RGT 使用浮点数。
-每个标签与对应输入具有相同文件名、形状及方向。
+剖面为 `float32` NumPy 数组，维度顺序为 **[深度/时间, 道]**。分割标签为 `0..C-1` 的整数（`255` 表示忽略）；RGT 标签为浮点数。请**先**按工区划分训练/验证，再生成切片与裁剪。转换规则见 [docs/DATA.zh-CN.md](docs/DATA.zh-CN.md)。
 
 ```text
 data/
 ├── pretrain/
-│   ├── 256/
-│   │   ├── images/<survey>/<section>.npy       # [256,256]
-│   │   └── index/seismic-npy-entries.npy       # generated index
-│   └── 512/
-│       ├── images/<survey>/<section>.npy       # [512,512]
-│       └── index/seismic-npy-entries.npy
-└── downstream/<task>/                         # salt / facies / fault / rgt
-    ├── train/images/<id>.npy
-    ├── train/labels/<id>.npy
-    ├── val/images/<id>.npy
-    └── val/labels/<id>.npy
+│   ├── 256/images/<survey>/<section>.npy   # [256, 256]
+│   └── 512/images/<survey>/<section>.npy   # [512, 512]
+└── downstream/<task>/                     # salt | facies | fault | rgt
+    ├── train/{images,labels}/<id>.npy
+    └── val/{images,labels}/<id>.npy
 ```
 
-先按源体或工区划分训练/验证，再生成切片和裁剪，避免相邻切片泄漏。
-`shots` 只计算训练剖面，验证集标签是额外监督。NPZ、原始 DAT/BIN 转换方法见
-[数据格式说明](docs/DATA.zh-CN.md)。
+### 3. 三阶段预训练
 
-## 三阶段预训练
-
-将原始 DINOv3-7B 初始化权重放在 `checkpoints/dinov3_vit7b16.pth`。
-配置保留原实验的 100k、10k、30k 步训练计划；GPU 数量会影响有效批量和学习率缩放。
+将 DINOv3-7B 初始化权重放在 `checkpoints/dinov3_vit7b16.pth`。配置保留原实验 100k / 10k / 30k 步的训练计划。
 
 ```bash
 seisdfe-index --root data/pretrain/256/images --output data/pretrain/256/index --validate
 seisdfe-index --root data/pretrain/512/images --output data/pretrain/512/index --validate
 
-# Choose the GPU count appropriate for your hardware; run stages in order.
-torchrun --standalone --nproc_per_node=8 -m seisdfe.cli.pretrain \
-  --config configs/pretrain/stage1.yaml --output outputs/stage1
-torchrun --standalone --nproc_per_node=8 -m seisdfe.cli.pretrain \
-  --config configs/pretrain/stage2.yaml --output outputs/stage2
-torchrun --standalone --nproc_per_node=8 -m seisdfe.cli.pretrain \
-  --config configs/pretrain/stage3.yaml --output outputs/stage3
+for s in 1 2 3; do
+  torchrun --standalone --nproc_per_node=8 -m seisdfe.cli.pretrain \
+    --config configs/pretrain/stage${s}.yaml --output outputs/stage${s}
+done
 ```
 
-Stage 1 将 RGB patch embedding 沿通道求均值，适配单通道输入。
-Stage 2/3 分别加载上一阶段的最终 EMA teacher；Stage 3 使用 256/384/512 全局裁剪。
-续训同一次实验时添加 `--resume`；检查路径时可使用 `--dry-run`。
-支持 `train.batch_size_per_gpu=2` 等配置覆盖。
+<details>
+<summary>预训练说明</summary>
 
-下游可以直接使用 Stage-3 DCP 目录 `outputs/stage3/ckpt/29999`，也可使用合并后的 `.pth`。
+- 第一阶段将 RGB patch embedding 沿通道求均值，以适配单通道输入。
+- 第二阶段加载第一阶段最终的 EMA teacher；第三阶段加载第二阶段的，并使用 256 / 384 / 512 裁剪训练。
+- GPU 数量会影响有效批量与学习率缩放。
+- 续训同一次实验使用 `--resume`，检查路径使用 `--dry-run`，并支持 `train.batch_size_per_gpu=2` 等点号覆盖。
+- 第三阶段的 DCP 目录（如 `outputs/stage3/ckpt/29999`）或合并后的 `.pth` 均可直接作为编码器权重。
 
-## 小样本训练
+</details>
+
+### 4. 小样本训练
 
 ```bash
 seisdfe-train --config configs/downstream/salt_fewshot.yaml \
   encoder.weights=checkpoints/seisdfe_stage3.pth \
   data.root=data/downstream/salt train.shots=5 train.seed=3407 \
   train.output=outputs/salt_5shot
-
-# Example: DPT with LoRA for 2 annotated fault sections.
-seisdfe-train --config configs/downstream/fault_fewshot.yaml \
-  decoder.type=dpt lora.enabled=true lora.last_n_blocks=8 \
-  lora.rank=8 lora.alpha=16 train.shots=2 train.output=outputs/fault_2shot_lora
 ```
 
-`decoder.type` 可选 `linear/conv/pup/mla/dpt`。MLA/DPT 需要四层特征。
-RGT 默认仅用最后一层；切换 DPT 时同时设置
-`encoder.layers=[9,19,29,39] decoder.n_bins=256`。
-严格仿射线性探测设置：
-`decoder.type=linear decoder.use_batchnorm=false decoder.dropout=0 lora.enabled=false`。
-盐体/地震相默认保留原实验的多层均值融合和 BatchNorm。
+<details>
+<summary>解码器、LoRA 与输出文件</summary>
 
-输出包括完整配置、实际样本名、数据 SHA256、环境版本、训练指标、最佳预测头和续训检查点。
-`best.pth` 按验证损失选择；`last.pth` 包含优化器与 RNG 状态。
-续训时使用原命令及相同覆盖参数，并添加 `--resume outputs/salt_5shot/last.pth`。
-固定样本列表使用 `train.subset_file=ids.txt`，每行一个文件名，行数等于 `train.shots`。
+- `decoder.type=linear|conv|pup|mla|dpt`；MLA 与 DPT 使用四层特征。
+- LoRA 示例：`decoder.type=dpt lora.enabled=true lora.last_n_blocks=8 lora.rank=8 lora.alpha=16`。
+- RGT 默认仅用最后一层；切换 DPT 时同时设置 `encoder.layers=[9,19,29,39] decoder.n_bins=256`。
+- 严格仿射线性探测：`decoder.type=linear decoder.use_batchnorm=false decoder.dropout=0 lora.enabled=false`。
+- 每次训练保存 `config.yaml`、`train_ids.txt`、`data_manifest.json`、`environment.json`、`metrics.jsonl`、`best.pth` 与 `last.pth`。续训使用 `--resume outputs/<run>/last.pth`；固定训练子集使用 `train.subset_file=ids.txt`。
 
-这套便携配置保留主要结构、归一化和损失选择；原论文部分数据划分、增强与采样策略没有
-自动重建，不能直接将重新训练结果称为论文指标复现，详见[复现说明](docs/REPRODUCIBILITY.zh-CN.md)。
+这套便携配置保留了主要的解码器、归一化与损失设置，但没有重建原论文的全部数据划分与增强；与论文指标比较前请阅读 [docs/REPRODUCIBILITY.zh-CN.md](docs/REPRODUCIBILITY.zh-CN.md)。
 
-## 推理
+</details>
 
-预测头内包含结构及预处理配置；仍需提供对应的 Stage-3 编码器权重。
-输入支持单个数字 NPY/NPZ 剖面，或包含 NPY 剖面的目录。
+### 5. 推理
 
 ```bash
-# Existing trained fault head: overlapping tiles, maximum probability fusion.
 seisdfe-infer --checkpoint checkpoints/fault_dpt.pth \
-  --encoder-config configs/encoder/vit7b.yaml --encoder-weights checkpoints/seisdfe_stage3.pth \
+  --encoder-config configs/encoder/vit7b.yaml \
+  --encoder-weights checkpoints/seisdfe_stage3.pth \
   --input data/field/section.npy --output outputs/field_fault
-
-# Existing trained RGT head: full-depth lateral windows with cosine blending.
-seisdfe-infer --checkpoint checkpoints/rgt_dpt_lora.pth \
-  --encoder-config configs/encoder/vit7b.yaml --encoder-weights checkpoints/seisdfe_stage3.pth \
-  --input data/field/section.npy --output outputs/field_rgt
-
-# A newly trained few-shot head.
-seisdfe-infer --checkpoint outputs/salt_5shot/best.pth \
-  --encoder-config configs/encoder/vit7b.yaml --encoder-weights checkpoints/seisdfe_stage3.pth \
-  --input data/downstream/salt/val/images --output outputs/salt_predictions
 ```
 
-结果保持输入 H×W 尺寸：二分类输出概率及标签；多分类输出 C×H×W 概率及 H×W 标签；
-RGT 输出连续数组。现成 RGT 分箱头输出范围为 [0,1]，线性回归头不限制范围。
-RGT 表示相对地质年代，不能直接解释为绝对年龄。
+RGT 推理将推理头换成 `checkpoints/rgt_dpt_lora.pth` 即可，也可使用任意小样本训练得到的 `best.pth`。输入可以是单个 NPY/NPZ 剖面，或包含 NPY 剖面的目录。
 
-可选 `--mode native|resize|fault-tiles|rgt-lateral`、`--window 512 --overlap 256`。
-CPU 使用 `--device cpu --precision fp32`。7B 编码器和 MLA 的内存开销较大，
-请按输入大小、Decoder 与设备实际容量选择配置。
+<details>
+<summary>推理选项</summary>
 
-## PCA 可视化
+- `--mode native|resize|fault-tiles|rgt-lateral`，`--window 512 --overlap 256`。
+- 断层采用重叠分块与最大概率融合；RGT 采用全深度横向滑窗与余弦加权融合。
+- 输出保持输入的 H×W 尺寸。分箱 RGT 头输出 [0, 1] 范围内的相对地质时间，不能直接解释为绝对年龄。
+- CPU 运行使用 `--device cpu --precision fp32`。7B 编码器与 MLA 解码器的内存开销较大。
+
+</details>
+
+### 6. PCA 特征可视化
 
 ```bash
 seisdfe-pca --encoder-config configs/encoder/vit7b.yaml \
@@ -155,29 +277,61 @@ seisdfe-pca --encoder-config configs/encoder/vit7b.yaml \
   --input data/field/section.npy --layers 9 19 29 39 --output outputs/pca
 ```
 
-层号从 **0** 开始。输出原图、PCA RGB、叠加图、PCA 基底及元数据。
-不同图片独立拟合的颜色不能直接比较；对比剖面时，可对单层添加
-`--basis .../layer_39_basis.npz` 复用相同基底。PCA 颜色不是类别标签。
+层号从 **0** 开始。若要在不同剖面间保持一致的配色，可通过 `--layers 39 --basis outputs/pca/layer_39_basis.npz` 复用单层 PCA 基底，并指定新的 `--output` 目录。
 
-## 代码结构与检查
+<details>
+<summary>代码结构与测试</summary>
 
 ```text
-seisdfe/             # application: data, models, training, inference, PCA, CLI
-dinov3/              # required original core, names retained
+seisdfe/             # data, models, training, inference, PCA, CLI
+dinov3/              # required DINOv3 core, original names retained
 configs/pretrain/    # three recorded stage configurations
 configs/downstream/  # portable few-shot task configurations
-configs/encoder/     # 7B architecture
-licenses/            # DINOv3 license
-tests/               # CPU behavior tests and CUDA three-stage smoke test
+configs/encoder/     # ViT-7B architecture
+docs/                # data, checkpoints, reproducibility
+tests/               # CPU tests and a CUDA three-stage smoke test
 ```
 
 ```bash
 CUDA_VISIBLE_DEVICES="" python -m unittest discover -s tests -v
-CUDA_VISIBLE_DEVICES=0 python tests/pretrain_smoke.py
+CUDA_VISIBLE_DEVICES=0 python tests/pretrain_smoke.py   # optional, CUDA
 ```
 
-[MIT 许可证](LICENSE)适用于原创应用代码；DINOv3 及其衍生实现保留
-[原许可与署名](THIRD_PARTY_NOTICES.md)。
+</details>
 
-研究问题请联系通讯作者 [Xinming Wu](mailto:xinmwu@ustc.edu.cn)。
-论文图件与第三方数据集保留各自适用的权利与来源条款。
+## 📚 文档
+
+| 内容 | English | 简体中文 |
+|:--|:--|:--|
+| 数据格式与转换 | [DATA.md](docs/DATA.md) | [DATA.zh-CN.md](docs/DATA.zh-CN.md) |
+| 模型权重与校验值 | [CHECKPOINTS.md](docs/CHECKPOINTS.md) | [CHECKPOINTS.zh-CN.md](docs/CHECKPOINTS.zh-CN.md) |
+| 复现说明 | [REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) | [REPRODUCIBILITY.zh-CN.md](docs/REPRODUCIBILITY.zh-CN.md) |
+
+<a id="seisdfe-citation"></a>
+
+## :bookmark: 引用
+
+如果 SeisDFE 对您的研究有帮助，欢迎引用：
+
+```bibtex
+@misc{guo2026seisdfe,
+  title  = {SeisDFE: A Seismic Foundation Model for Dense Feature Extraction},
+  author = {Guo, Zhixiang and Wu, Xinming and Dou, Yimin and Gao, Hui and
+            Zhao, Siyao and Huang, He and Liu, Wei},
+  year   = {2026},
+  note   = {Manuscript under review},
+  url    = {https://github.com/ProgrammerZXG/SeisDFE}
+}
+```
+
+## :memo: 致谢
+
+本研究得到国家自然科学基金（NSFC，批准号 42625404）资助。代码基于 [DINOv3](https://github.com/facebookresearch/dinov3) 构建，并使用了 [LoRA](https://github.com/microsoft/LoRA)。感谢 USGS、SEG、NZPAM、NLOG 等公开数据库提供预训练所用的地震数据体，感谢 [SEAM](https://www.aicrowd.com/challenges/seismic-facies-identification-challenge)、[TGS](https://www.kaggle.com/competitions/tgs-salt-identification-challenge) 与 [F3 地震相基准](https://github.com/yalaudah/facies_classification_benchmark)提供下游数据集。
+
+## :postbox: 联系方式
+
+如对本工作有任何问题，欢迎联系 xinmwu@ustc.edu.cn 或 zxg3@mail.ustc.edu.cn。
+
+## 📄 许可证
+
+SeisDFE 原创代码采用 [MIT 许可证](LICENSE)。DINOv3 衍生组件与模型权重沿用 [DINOv3 许可协议](licenses/DINOv3-LICENSE.md)，详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。论文图件与第三方数据集保留各自的适用条款。
