@@ -17,7 +17,3 @@ It does not relicense third-party code or model weights.
   as a dependency. Upstream: https://github.com/microsoft/LoRA.
 - Datasets, manuscripts, figures, pretrained DINOv3 weights and derived
   checkpoints retain their respective source and model-license conditions.
-
-The copied research checkout had no Git metadata. Exact source-file hashes
-and extracted symbols are recorded in [source_manifest.json](docs/source_manifest.json),
-so no unverified upstream commit is claimed.

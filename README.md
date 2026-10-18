@@ -14,7 +14,7 @@ Wei Liu<sup>1,2,3</sup>
 
 [![Paper](https://img.shields.io/badge/Paper-Under%20Review-b31b1b?style=flat-square)](#seisdfe-citation)
 [![Code](https://img.shields.io/badge/Code-Released-2ea44f?style=flat-square)](#seisdfe-quick-start)
-[![Weights](https://img.shields.io/badge/Weights-Coming%20Soon-9e9e9e?style=flat-square)](docs/CHECKPOINTS.md)
+[![Weights](https://img.shields.io/badge/Weights-Coming%20Soon-9e9e9e?style=flat-square)](#seisdfe-models)
 [![License](https://img.shields.io/badge/License-MIT-1f6feb?style=flat-square)](LICENSE)
 
 **English** | [简体中文](README.zh-CN.md)
@@ -37,7 +37,7 @@ Wei Liu<sup>1,2,3</sup>
 
 - **2026.10.18:** Released the code for three-stage pretraining, few-shot training, field inference, and PCA feature visualization.
 - **2026.10:** The manuscript is under review.
-- **Coming soon:** SeisDFE encoder weights and the fault / RGT field heads (see [Checkpoints](docs/CHECKPOINTS.md)).
+- **Coming soon:** SeisDFE encoder weights and the fault / RGT field heads.
 
 ## ✨ Introduction
 
@@ -166,6 +166,8 @@ Features of neighboring sections from the frozen 2D encoder are fused and decode
 
 -->
 
+<a id="seisdfe-models"></a>
+
 ## 🧠 Models
 
 | Model | Architecture | Trained on | Status |
@@ -174,7 +176,7 @@ Features of neighboring sections from the frozen 2D encoder are fused and decode
 | Fault head `fault_dpt.pth` | Frozen SeisDFE + DPT | Synthetic faults | Coming soon |
 | RGT head `rgt_dpt_lora.pth` | SeisDFE + DPT + LoRA (last 30 blocks) | Synthetic RGT | Coming soon |
 
-Weights are not bundled and no command downloads them implicitly. File sizes, SHA256 checksums, and exact settings are in [docs/CHECKPOINTS.md](docs/CHECKPOINTS.md). Pretraining starts from the original DINOv3-7B weights, which must be obtained from the [DINOv3 authors](https://github.com/facebookresearch/dinov3) under their terms.
+Weights are not bundled and no command downloads them implicitly. Pretraining starts from the original DINOv3-7B weights, which must be obtained from the [DINOv3 authors](https://github.com/facebookresearch/dinov3) under their terms.
 
 <a id="seisdfe-quick-start"></a>
 
@@ -196,7 +198,7 @@ A pinned [environment.yml](environment.yml) is also provided. Run all commands f
 
 ### 2. Prepare data
 
-Sections are `float32` NumPy arrays indexed as **[depth/time, trace]**. Segmentation labels are integers `0..C-1` (`255` = ignore); RGT labels are floating point. Split by survey **before** extracting slices or crops. See [docs/DATA.md](docs/DATA.md) for conversion rules.
+Sections are `float32` NumPy arrays indexed as **[depth/time, trace]**. Segmentation labels are integers `0..C-1` (`255` = ignore); RGT labels are floating point. Split by survey **before** extracting slices or crops.
 
 ```text
 data/
@@ -251,7 +253,7 @@ seisdfe-train --config configs/downstream/salt_fewshot.yaml \
 - Strictly affine linear probe: `decoder.type=linear decoder.use_batchnorm=false decoder.dropout=0 lora.enabled=false`.
 - Each run saves `config.yaml`, `train_ids.txt`, `data_manifest.json`, `environment.json`, `metrics.jsonl`, `best.pth`, and `last.pth`. Resume with `--resume outputs/<run>/last.pth`; fix the subset with `train.subset_file=ids.txt`.
 
-These portable presets keep the main decoder, normalization, and loss choices but do not rebuild every original data split or augmentation; see [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) before comparing with paper numbers.
+These portable presets keep the main decoder, normalization, and loss choices but do not rebuild every original data split or augmentation.
 
 </details>
 
@@ -295,7 +297,6 @@ dinov3/              # required DINOv3 core, original names retained
 configs/pretrain/    # three recorded stage configurations
 configs/downstream/  # portable few-shot task configurations
 configs/encoder/     # ViT-7B architecture
-docs/                # data, checkpoints, reproducibility
 tests/               # CPU tests and a CUDA three-stage smoke test
 ```
 
@@ -305,14 +306,6 @@ CUDA_VISIBLE_DEVICES=0 python tests/pretrain_smoke.py   # optional, CUDA
 ```
 
 </details>
-
-## 📚 Documentation
-
-| Topic | English | 简体中文 |
-|:--|:--|:--|
-| Data format and conversion | [DATA.md](docs/DATA.md) | [DATA.zh-CN.md](docs/DATA.zh-CN.md) |
-| Checkpoints and checksums | [CHECKPOINTS.md](docs/CHECKPOINTS.md) | [CHECKPOINTS.zh-CN.md](docs/CHECKPOINTS.zh-CN.md) |
-| Reproducibility record | [REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) | [REPRODUCIBILITY.zh-CN.md](docs/REPRODUCIBILITY.zh-CN.md) |
 
 <a id="seisdfe-citation"></a>
 

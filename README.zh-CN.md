@@ -14,7 +14,7 @@ Wei Liu<sup>1,2,3</sup>
 
 [![Paper](https://img.shields.io/badge/%E8%AE%BA%E6%96%87-%E5%AE%A1%E7%A8%BF%E4%B8%AD-b31b1b?style=flat-square)](#seisdfe-citation)
 [![Code](https://img.shields.io/badge/%E4%BB%A3%E7%A0%81-%E5%B7%B2%E5%8F%91%E5%B8%83-2ea44f?style=flat-square)](#seisdfe-quick-start)
-[![Weights](https://img.shields.io/badge/%E6%9D%83%E9%87%8D-%E5%8D%B3%E5%B0%86%E5%8F%91%E5%B8%83-9e9e9e?style=flat-square)](docs/CHECKPOINTS.zh-CN.md)
+[![Weights](https://img.shields.io/badge/%E6%9D%83%E9%87%8D-%E5%8D%B3%E5%B0%86%E5%8F%91%E5%B8%83-9e9e9e?style=flat-square)](#seisdfe-models)
 [![License](https://img.shields.io/badge/License-MIT-1f6feb?style=flat-square)](LICENSE)
 [![Tests](https://img.shields.io/github/actions/workflow/status/ProgrammerZXG/SeisDFE/tests.yml?branch=main&label=CPU%20tests&style=flat-square)](https://github.com/ProgrammerZXG/SeisDFE/actions/workflows/tests.yml)
 
@@ -38,7 +38,7 @@ Wei Liu<sup>1,2,3</sup>
 
 - **2026.10.18：** 发布三阶段预训练、小样本训练、实际资料推理与 PCA 特征可视化代码。
 - **2026.10：** 论文审稿中。
-- **即将发布：** SeisDFE 编码器权重，以及断层 / RGT 实际资料推理头（见[模型权重说明](docs/CHECKPOINTS.zh-CN.md)）。
+- **即将发布：** SeisDFE 编码器权重，以及断层 / RGT 实际资料推理头。
 
 ## ✨ 简介
 
@@ -167,6 +167,8 @@ Wei Liu<sup>1,2,3</sup>
 
 -->
 
+<a id="seisdfe-models"></a>
+
 ## 🧠 模型
 
 | 模型 | 结构 | 训练数据 | 状态 |
@@ -175,7 +177,7 @@ Wei Liu<sup>1,2,3</sup>
 | 断层推理头 `fault_dpt.pth` | 冻结 SeisDFE + DPT | 合成断层数据 | 即将发布 |
 | RGT 推理头 `rgt_dpt_lora.pth` | SeisDFE + DPT + LoRA（后 30 块） | 合成 RGT 数据 | 即将发布 |
 
-权重不随代码分发，程序也不会自动下载。文件大小、SHA256 校验值与具体配置见 [docs/CHECKPOINTS.zh-CN.md](docs/CHECKPOINTS.zh-CN.md)。预训练需要原始 DINOv3-7B 权重，请按其条款从 [DINOv3 官方](https://github.com/facebookresearch/dinov3)获取。
+权重不随代码分发，程序也不会自动下载。预训练需要原始 DINOv3-7B 权重，请按其条款从 [DINOv3 官方](https://github.com/facebookresearch/dinov3)获取。
 
 <a id="seisdfe-quick-start"></a>
 
@@ -197,7 +199,7 @@ pip install -e .
 
 ### 2. 准备数据
 
-剖面为 `float32` NumPy 数组，维度顺序为 **[深度/时间, 道]**。分割标签为 `0..C-1` 的整数（`255` 表示忽略）；RGT 标签为浮点数。请**先**按工区划分训练/验证，再生成切片与裁剪。转换规则见 [docs/DATA.zh-CN.md](docs/DATA.zh-CN.md)。
+剖面为 `float32` NumPy 数组，维度顺序为 **[深度/时间, 道]**。分割标签为 `0..C-1` 的整数（`255` 表示忽略）；RGT 标签为浮点数。请**先**按工区划分训练/验证，再生成切片与裁剪。
 
 ```text
 data/
@@ -252,7 +254,7 @@ seisdfe-train --config configs/downstream/salt_fewshot.yaml \
 - 严格仿射线性探测：`decoder.type=linear decoder.use_batchnorm=false decoder.dropout=0 lora.enabled=false`。
 - 每次训练保存 `config.yaml`、`train_ids.txt`、`data_manifest.json`、`environment.json`、`metrics.jsonl`、`best.pth` 与 `last.pth`。续训使用 `--resume outputs/<run>/last.pth`；固定训练子集使用 `train.subset_file=ids.txt`。
 
-这套便携配置保留了主要的解码器、归一化与损失设置，但没有重建原论文的全部数据划分与增强；与论文指标比较前请阅读 [docs/REPRODUCIBILITY.zh-CN.md](docs/REPRODUCIBILITY.zh-CN.md)。
+这套便携配置保留了主要的解码器、归一化与损失设置，但没有重建原论文的全部数据划分与增强。
 
 </details>
 
@@ -296,7 +298,6 @@ dinov3/              # required DINOv3 core, original names retained
 configs/pretrain/    # three recorded stage configurations
 configs/downstream/  # portable few-shot task configurations
 configs/encoder/     # ViT-7B architecture
-docs/                # data, checkpoints, reproducibility
 tests/               # CPU tests and a CUDA three-stage smoke test
 ```
 
@@ -306,14 +307,6 @@ CUDA_VISIBLE_DEVICES=0 python tests/pretrain_smoke.py   # optional, CUDA
 ```
 
 </details>
-
-## 📚 文档
-
-| 内容 | English | 简体中文 |
-|:--|:--|:--|
-| 数据格式与转换 | [DATA.md](docs/DATA.md) | [DATA.zh-CN.md](docs/DATA.zh-CN.md) |
-| 模型权重与校验值 | [CHECKPOINTS.md](docs/CHECKPOINTS.md) | [CHECKPOINTS.zh-CN.md](docs/CHECKPOINTS.zh-CN.md) |
-| 复现说明 | [REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) | [REPRODUCIBILITY.zh-CN.md](docs/REPRODUCIBILITY.zh-CN.md) |
 
 <a id="seisdfe-citation"></a>
 
