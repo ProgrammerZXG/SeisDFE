@@ -342,4 +342,4 @@ If you have any questions about this work, please feel free to contact xinmwu@us
 
 ## 📄 License
 
-Original SeisDFE code is released under the [MIT License](LICENSE). DINOv3-derived components and model weights retain the [DINOv3 License](licenses/DINOv3-LICENSE.md); see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Manuscript figures and third-party datasets retain their own terms.
+Original SeisDFE code is released under the [MIT License](LICENSE). 
