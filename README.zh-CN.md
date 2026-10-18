@@ -319,18 +319,7 @@ CUDA_VISIBLE_DEVICES=0 python tests/pretrain_smoke.py   # optional, CUDA
 
 ## :bookmark: 引用
 
-如果 SeisDFE 对您的研究有帮助，欢迎引用：
-
-```bibtex
-@misc{guo2026seisdfe,
-  title  = {SeisDFE: A Seismic Foundation Model for Dense Feature Extraction},
-  author = {Guo, Zhixiang and Wu, Xinming and Dou, Yimin and Gao, Hui and
-            Zhao, Siyao and Huang, He and Liu, Wei},
-  year   = {2026},
-  note   = {Manuscript under review},
-  url    = {https://github.com/ProgrammerZXG/SeisDFE}
-}
-```
+即将提供（Coming soon）。
 
 ## :memo: 致谢
 
