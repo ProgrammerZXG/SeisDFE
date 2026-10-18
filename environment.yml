@@ -1,0 +1,15 @@
+name: seisdfe
+channels: [conda-forge]
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - torch==2.5.0
+      - torchvision==0.20.0
+      - numpy==2.4.3
+      - omegaconf==2.3.0
+      - loralib==0.1.2
+      - Pillow==12.1.1
+      - PyYAML==6.0.2
+      - termcolor==2.4.0
+      - -e .

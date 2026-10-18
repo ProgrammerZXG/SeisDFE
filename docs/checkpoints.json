@@ -1,0 +1,21 @@
+{
+  "format": "seisdfe-adapter-v1",
+  "assets": [
+    {
+      "name": "fault_dpt",
+      "filename": "fault_dpt.pth",
+      "bytes": 127067802,
+      "sha256": "3f7df1cd326bbac0db088b15c8f3501b45616501577232ebffcddf9cbb439c78",
+      "download_url": null,
+      "encoder": "SeisDFE Stage-3 EMA teacher, ViT-7B / patch16 / 1 channel"
+    },
+    {
+      "name": "rgt_dpt_lora",
+      "filename": "rgt_dpt_lora.pth",
+      "bytes": 221513082,
+      "sha256": "cef9c8a2eb519c8e5da3d9d76bb8d217216c4e9bbaf46657eee26928494769be",
+      "download_url": null,
+      "encoder": "SeisDFE Stage-3 EMA teacher, ViT-7B / patch16 / 1 channel"
+    }
+  ]
+}

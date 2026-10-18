@@ -1,0 +1,26 @@
+[
+  {
+    "head": "fault_dpt",
+    "tensors": 68,
+    "shape": [
+      1,
+      1,
+      128,
+      160
+    ],
+    "max_abs_difference": 0.0,
+    "finite": true
+  },
+  {
+    "head": "rgt_dpt_lora",
+    "tensors": 188,
+    "shape": [
+      1,
+      1,
+      128,
+      160
+    ],
+    "max_abs_difference": 0.0,
+    "finite": true
+  }
+]

@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "seisdfe"
+version = "0.1.0"
+description = "Seismic dense feature extraction with three-stage DINOv3 pretraining"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT for SeisDFE code; DINOv3 components retain their license"}
+dependencies = ["torch>=2.5,<2.9", "torchvision>=0.20,<0.24", "numpy>=1.26,<3", "omegaconf==2.3.0", "loralib==0.1.2", "Pillow>=10", "PyYAML>=6", "termcolor>=2"]
+
+[project.scripts]
+seisdfe-train = "seisdfe.cli.train:main"
+seisdfe-infer = "seisdfe.cli.infer:main"
+seisdfe-pca = "seisdfe.cli.pca:main"
+seisdfe-pretrain = "seisdfe.cli.pretrain:main"
+seisdfe-convert = "seisdfe.cli.convert_data:main"
+seisdfe-index = "seisdfe.cli.index_data:main"
+seisdfe-export-head = "seisdfe.cli.export_head:main"
+
+[tool.setuptools]
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md", "licenses/*.md"]
+
+[tool.setuptools.packages.find]
+include = ["seisdfe*", "dinov3*"]
+
+[tool.setuptools.package-data]
+dinov3 = ["configs/*.yaml"]

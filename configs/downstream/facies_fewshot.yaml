@@ -1,0 +1,59 @@
+encoder:
+  config: configs/encoder/vit7b.yaml
+  weights: checkpoints/seisdfe_stage3.pth
+  branch: teacher
+  layers:
+  - 9
+  - 19
+  - 29
+  - 39
+  normalize: true
+task:
+  name: facies
+  type: segmentation
+  num_classes: 6
+  ignore_index: 255
+  loss: weighted_dice
+decoder:
+  type: linear
+  fusion: mean
+  use_batchnorm: true
+  dropout: 0.0
+lora:
+  enabled: false
+  last_n_blocks: 8
+  rank: 8
+  alpha: 16
+  dropout: 0.05
+  targets:
+  - qkv
+  - proj
+normalization:
+  mode: mean_std_minmax
+data:
+  root: data/downstream/facies
+  image_size:
+  - 256
+  - 704
+  horizontal_flip: true
+  normalize_target: false
+  label_offset: 0
+  vertical_flip: false
+train:
+  output: outputs/facies_2shot
+  shots: 2
+  subset_file: null
+  seed: 3407
+  steps: 2000
+  batch_size: 1
+  lr: 0.0001
+  weight_decay: 0.0
+  precision: bf16
+  deterministic: true
+  grad_clip: 1.0
+  eval_every: 200
+  log_every: 10
+  optimizer: adam
+inference:
+  mode: resize
+  precision: bf16

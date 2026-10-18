@@ -1,0 +1,47 @@
+encoder:
+  config: configs/encoder/vit7b.yaml
+  weights: checkpoints/seisdfe_stage3.pth
+  branch: teacher
+  layers:
+  - 9
+  - 19
+  - 29
+  - 39
+  normalize: true
+task:
+  name: rgt
+  type: regression
+  num_classes: 1
+decoder:
+  type: dpt
+  hidden_dim: 256
+  post_process_channels:
+  - 128
+  - 256
+  - 512
+  - 1024
+  use_batchnorm: true
+  n_bins: 256
+  min_value: 0.0
+  max_value: 1.0
+  norm_strategy: linear
+lora:
+  enabled: true
+  last_n_blocks: 30
+  rank: 32
+  alpha: 64
+  dropout: 0.05
+  targets:
+  - qkv
+  - proj
+normalization:
+  clip_sigma: 3.0
+  zscore: true
+  minmax_01: true
+data:
+  image_size:
+  - 512
+  - 512
+inference:
+  mode: rgt-lateral
+  precision: bf16

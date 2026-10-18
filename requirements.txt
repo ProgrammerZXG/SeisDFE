@@ -1,0 +1,2 @@
+# Install the CUDA-appropriate PyTorch/torchvision pair first (see README).
+-e .

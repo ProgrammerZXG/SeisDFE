@@ -1,0 +1,68 @@
+student:
+  arch: vit_7b
+  patch_size: 16
+  drop_path_rate: 0.4
+  layerscale: 1.0e-05
+  pretrained_weights: ''
+  ffn_layer: swiglu64
+  ffn_ratio: 3
+  resume_from_teacher_chkpt: ''
+  average_patch_embed_channels_on_resume: false
+  qkv_bias: false
+  proj_bias: true
+  ffn_bias: true
+  norm_layer: layernormbf16
+  n_storage_tokens: 4
+  mask_k_bias: true
+  untie_cls_and_patch_norms: false
+  untie_global_and_local_cls_norm: true
+  in_chans: 1
+  pos_embed_type: rope
+  pos_embed_rope_base: 100
+  pos_embed_rope_min_period: null
+  pos_embed_rope_max_period: null
+  pos_embed_rope_normalize_coords: separate
+  pos_embed_rope_shift_coords: null
+  pos_embed_rope_jitter_coords: null
+  pos_embed_rope_rescale_coords: 2
+  pos_embed_rope_dtype: fp32
+  fp8_enabled: false
+  fp8_filter: blocks
+  patch_drop: 0.0
+crops:
+  global_crops_scale:
+  - 0.32
+  - 1.0
+  local_crops_number: 8
+  local_crops_scale:
+  - 0.05
+  - 0.32
+  global_crops_size:
+  - 256
+  - 384
+  - 512
+  local_crops_size:
+  - 112
+  - 168
+  - 224
+  global_local_crop_pairs_ratios:
+  - 0.35
+  - 0.4
+  - 0.25
+  gram_teacher_crops_size:
+  - 512
+  - 512
+  - 512
+  localcrops_subset_of_globalcrops: false
+  share_color_jitter: false
+  horizontal_flips: false
+  gram_teacher_no_distortions: true
+  rgb_mean:
+  - 0.0
+  rgb_std:
+  - 1.0
+  teacher_to_student_resolution_scale: 1.0
+compute_precision:
+  param_dtype: bf16
+  reduce_dtype: fp32
+  sharding_strategy: SHARD_GRAD_OP
