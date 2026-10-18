@@ -16,7 +16,6 @@ Wei Liu<sup>1,2,3</sup>
 [![Code](https://img.shields.io/badge/Code-Released-2ea44f?style=flat-square)](#seisdfe-quick-start)
 [![Weights](https://img.shields.io/badge/Weights-Coming%20Soon-9e9e9e?style=flat-square)](docs/CHECKPOINTS.md)
 [![License](https://img.shields.io/badge/License-MIT-1f6feb?style=flat-square)](LICENSE)
-[![Tests](https://img.shields.io/github/actions/workflow/status/ProgrammerZXG/SeisDFE/tests.yml?branch=main&label=CPU%20tests&style=flat-square)](https://github.com/ProgrammerZXG/SeisDFE/actions/workflows/tests.yml)
 
 **English** | [简体中文](README.zh-CN.md)
 
