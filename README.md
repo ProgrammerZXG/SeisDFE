@@ -45,10 +45,10 @@ Wei Liu<sup>1,2,3</sup>
 High-quality annotations are scarce in seismic interpretation, and most deep-learning workflows still train a separate model for each task. <b>SeisDFE</b> is a 7B-parameter seismic foundation model for <b>dense feature extraction</b>. It is pretrained on <b>5.34 million</b> 2D seismic images derived from <b>more than 500</b> public 3D seismic volumes (over 200,000 km²), starting from DINOv3 ViT-7B. Three successive stages, discriminative self-supervised learning, Gram feature anchoring, and multi-resolution adaptation, make the patch-level features both discriminative and spatially coherent. With the encoder <b>frozen</b>, the same features support seismic facies classification, salt detection, fault detection, and relative geologic time (RGT) estimation, and extend to synthetic-to-field transfer and sparse 3D geobody detection.
 </p>
 
-<p align="center">
+<!-- <p align="center">
   <img src="assets/workflow.jpg" width="100%" alt="SeisDFE framework">
 </p>
-<p align="center"><sub><b>Figure 1.</b> Three-stage pretraining (left), the frozen ViT-7B encoder and its patch-level dense features (middle), and task-specific decoders for downstream interpretation (right).</sub></p>
+<p align="center"><sub><b>Figure 1.</b> Three-stage pretraining (left), the frozen ViT-7B encoder and its patch-level dense features (middle), and task-specific decoders for downstream interpretation (right).</sub></p> -->
 
 **Highlights**
 
