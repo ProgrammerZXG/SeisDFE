@@ -12,7 +12,7 @@ Siyao Zhao<sup>1,2,3</sup>,
 He Huang<sup>1,2,3</sup>,
 Wei Liu<sup>1,2,3</sup>
 
-[![Paper](https://img.shields.io/badge/Paper-Under%20Review-b31b1b?style=flat-square)](#seisdfe-citation)
+[![arXiv](https://img.shields.io/badge/arXiv-2611.20745-b31b1b?style=flat-square)](https://arxiv.org/abs/2611.20745)
 [![License](https://img.shields.io/badge/License-MIT-1f6feb?style=flat-square)](LICENSE)
 
 **English** | [简体中文](README.zh-CN.md)
@@ -57,7 +57,15 @@ High-quality annotations are scarce in seismic interpretation, and most deep-lea
 
 ## :bookmark: Citation
 
-Coming soon.
+@misc{guo2026seismicfoundationmodeldense,
+      title={A Seismic Foundation Model for Dense Feature Extraction}, 
+      author={Zhixiang Guo and Xinming Wu and Yimin Dou and Hui Gao and Siyao Zhao and He Huang and Wei Liu},
+      year={2026},
+      eprint={2611.20745},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2611.20745}, 
+}
 
 ## :postbox: Contact
 
