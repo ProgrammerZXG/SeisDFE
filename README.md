@@ -57,16 +57,17 @@ High-quality annotations are scarce in seismic interpretation, and most deep-lea
 
 ## :bookmark: Citation
 
+```bibtex
 @misc{guo2026seismicfoundationmodeldense,
-      title={A Seismic Foundation Model for Dense Feature Extraction}, 
-      author={Zhixiang Guo and Xinming Wu and Yimin Dou and Hui Gao and Siyao Zhao and He Huang and Wei Liu},
-      year={2026},
-      eprint={2611.20745},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2611.20745}, 
+  title         = {A Seismic Foundation Model for Dense Feature Extraction},
+  author        = {Zhixiang Guo and Xinming Wu and Yimin Dou and Hui Gao and Siyao Zhao and He Huang and Wei Liu},
+  year          = {2026},
+  eprint        = {2611.20745},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CV},
+  url           = {https://arxiv.org/abs/2611.20745}
 }
-
+```
 ## :postbox: Contact
 
 If you have any questions about this work, please feel free to contact xinmwu@ustc.edu.cn or zxg3@mail.ustc.edu.cn.
