@@ -12,6 +12,8 @@ Siyao Zhao<sup>1,2,3</sup>,
 He Huang<sup>1,2,3</sup>,
 Wei Liu<sup>1,2,3</sup>
 
+**[🌐 项目主页](https://programmerzxg.github.io/SeisDFE/)**
+
 [![Paper](https://img.shields.io/badge/%E8%AE%BA%E6%96%87-%E5%AE%A1%E7%A8%BF%E4%B8%AD-b31b1b?style=flat-square)](#seisdfe-citation)
 [![License](https://img.shields.io/badge/License-MIT-1f6feb?style=flat-square)](LICENSE)
 
